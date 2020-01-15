@@ -1,5 +1,6 @@
 import * as a from "./actionTypes";
-import axios from "axios";
+import axiosInstance from "../fixtures/axiosInstance";
+import axios from 'axios'
 
 export const fetchRequest = () => ({
   type: a.FETCH_NEWS_REQUEST
@@ -35,7 +36,7 @@ export const signUp = (user, cb) => dispatch => {
 
   try {
     const sendData = async () => {
-      const res = await axios.post(`/users`, { ...user });
+      const res = await axiosInstance.post(`/users`, { ...user });
       console.log(res)
       if(res.status === 201) {
         dispatch({
@@ -43,8 +44,12 @@ export const signUp = (user, cb) => dispatch => {
           payload: res.data
         });
         cb()
+      } else if (res.status === 400) {
+        dispatch({
+          type: a.CREATE_USER_FAILURE,
+          error: res.data
+        });
       }
-      
     };
     sendData();
   } catch (e) {
@@ -60,7 +65,7 @@ export const login = (user, cb) => dispatch => {
     type: a.LOGIN_REQUEST
   });
 
-  axios
+  axiosInstance
     .post(`/users/login`, {
       ...user
     })
@@ -72,9 +77,10 @@ export const login = (user, cb) => dispatch => {
         });
         cb()
       } else if (response.status === 400) {
+        console.log(response)
         dispatch({
           type: a.LOGIN_FAILURE,
-          error: response.error.message
+          error: response.data
         });
       }
     })

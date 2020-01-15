@@ -26,7 +26,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        data: action.payload
+        data: action.payload,
+        error: ''
       };
     case CREATE_USER_FAILURE:
       return {

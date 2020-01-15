@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { login } from "../actions/actions";
 
 const LoginPage = props => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  useEffect(() => {
+    if (props.error && props.error.includes("User")) {
+      setEmailError(props.error);
+      setPasswordError('');
+    } else if (props.error && props.error.includes("password")) {
+      setPasswordError(props.error);
+      setEmailError('');
+    } 
+  }, [props.error]);
 
   const isDisabled = () => {
     if (email && password) {
@@ -24,11 +36,12 @@ const LoginPage = props => {
       props.history.push("/news");
     });
   };
- 
+
   return (
     <div className="container">
       <h3>Please Provide Your Email and Password</h3>
       <form onSubmit={onSubmit}>
+        <p>{emailError}</p>
         <input
           autoFocus
           type="email"
@@ -36,6 +49,7 @@ const LoginPage = props => {
           value={email}
           onChange={e => setEmail(e.target.value)}
         />
+        <p>{passwordError}</p>
         <input
           placeholder="Set password"
           value={password}
@@ -51,9 +65,6 @@ const LoginPage = props => {
 
 const mapStateToProps = state => ({
   error: state.user.error
-})
+});
 
-export default connect(
-  mapStateToProps,
-  { login }
-)(LoginPage);
+export default connect(mapStateToProps, { login })(LoginPage);
